@@ -1,20 +1,14 @@
 //  This program is licensed under the MIT License.
 //  Copyright 2016, aike (@aike1000)
 
-var player;
-
 window.onload = function() {
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    var ctx = new AudioContext();
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    player = new Player(ctx, 'sound/apan.mp3');
-
+    var player = new Player(ctx, 'sound/apan.mp3');
     var splitter = ctx.createChannelSplitter(2);
-
     var panL = ctx.createPanner();
     panL.panningModel = "HRTF";
     panL.setPosition(-1, 0, 0);
-
     var panR = ctx.createPanner();
     panR.panningModel = "HRTF";
     panR.setPosition(1, 0, 0);
@@ -35,16 +29,15 @@ window.onload = function() {
         panR.setPosition(cs, 0, -sn);
     } 
 
-    var angle = 0;
-    setInterval(function() {
-        angle += 0.005;
-        setAngle(angle);
-    })
-
-    var sensor = new Sensor(function(a) {
-//        setPan(a);
+    window.addEventListener("deviceorientation", function(e){
+        if (e.alpha) {
+            setAngle(e.alpha * Math.PI / 180);
+        }
     });
+
+    document.querySelector("#play")
+        .addEventListener("mouseup",
+            function() {
+                player.toggle();
+            });
 };
-
-
-
